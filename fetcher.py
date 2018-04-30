@@ -13,7 +13,7 @@ def fetch_nijisanji_tweets(tokens):
     api = tweepy.API(auth)
     try:
         data = api.user_timeline(**params)
-        return list(map(lambda x: x.text, data))
+        return map(lambda x: {'text': x.text, 'id': x.id}, data)
     except tweepy.error.TweepError as e:
         print(e)
         exit(-1)
