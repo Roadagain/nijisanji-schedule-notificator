@@ -15,10 +15,9 @@ req = twitter.get(url, params=params)
 
 if req.status_code == 200:
     data = json.loads(req.text)
-    print(type(data))
     tweets = list(map(lambda x: x['text'], data))
     with open('result.txt', 'w') as result:
         result.write(json.dumps({'tweets': tweets}, ensure_ascii=False))
-    print(data)
+    # print(data)
 else:
     print(req.status_code)
