@@ -1,5 +1,7 @@
 import tweepy
 import json
+import re
+
 
 def fetch_nijisanji_tweets(tokens):
     auth = tweepy.OAuthHandler(tokens['consumer_key'], tokens['consumer_secret'])
