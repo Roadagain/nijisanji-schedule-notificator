@@ -1,10 +1,7 @@
 import tweepy
 import json
 
-# load tokens
-with open('tokens.json') as json_data:
-    tokens = json.load(json_data)
-    json_data.close()
+tokens = json.load(open('tokens.json'))
 
 auth = tweepy.OAuthHandler(tokens['consumer_key'], tokens['consumer_secret'])
 auth.set_access_token(tokens['access_token'], tokens['access_token_secret'])
@@ -24,4 +21,3 @@ tweets = list(map(lambda x: x.text, data))
 
 with open('result.txt', 'w') as result:
     result.write(json.dumps({'tweets': tweets}, ensure_ascii=False))
-# print(data)
