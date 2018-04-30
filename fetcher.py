@@ -29,6 +29,8 @@ def search_schedule(tweets):
 
 if __name__ == '__main__':
     tokens = json.load(open('config.json'))['tokens']
-    tweets = fetch_tweets(tokens)
-    with open('result.txt', 'w') as result:
+    tweets = list(fetch_nijisanji_tweets(tokens))
+    schedule = search_schedule(tweets)
+    print(schedule)
+    with open('result.json', 'w') as result:
         result.write(json.dumps({'tweets': tweets}, ensure_ascii=False))
