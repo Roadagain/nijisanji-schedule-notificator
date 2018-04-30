@@ -7,7 +7,11 @@ with open('tokens.json') as json_data:
     json_data.close()
 
 url = 'https://api.twitter.com/1.1/statuses/user_timeline.json'
-params = { 'user_id': 'nijisanji_app' }
+params = {
+        'screen_name': 'nijisanji_app',
+        'exclude_replies': True,
+        'trim_user': True,
+        }
 
 CK, CKS, AT, ATS = [tokens['consumerKey'], tokens['consumerKeySecret'], tokens['accessToken'], tokens['accessTokenSecret']]
 twitter = OAuth1Session(CK, CKS, AT, ATS)
