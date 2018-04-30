@@ -1,4 +1,4 @@
-from requests_oauthlib import OAuth1Session
+import tweepy
 import json
 
 # load tokens
@@ -6,22 +6,22 @@ with open('tokens.json') as json_data:
     tokens = json.load(json_data)
     json_data.close()
 
-url = 'https://api.twitter.com/1.1/statuses/user_timeline.json'
+auth = tweepy.OAuthHandler(tokens['consumer_key'], tokens['consumer_secret'])
+auth.set_access_token(tokens['access_token'], tokens['access_token_secret'])
 params = {
         'screen_name': 'nijisanji_app',
         'exclude_replies': True,
         'trim_user': True,
         }
 
-CK, CKS, AT, ATS = [tokens['consumerKey'], tokens['consumerKeySecret'], tokens['accessToken'], tokens['accessTokenSecret']]
-twitter = OAuth1Session(CK, CKS, AT, ATS)
-req = twitter.get(url, params=params)
+api = tweepy.API(auth)
+try:
+    data = api.user_timeline(**params)
+except tweepy.error.TweepError as e:
+    print(e)
+    exit(-1)
+tweets = list(map(lambda x: x.text, data))
 
-if req.status_code == 200:
-    data = json.loads(req.text)
-    tweets = list(map(lambda x: x['text'], data))
-    with open('result.txt', 'w') as result:
-        result.write(json.dumps({'tweets': tweets}, ensure_ascii=False))
-    # print(data)
-else:
-    print(req.status_code)
+with open('result.txt', 'w') as result:
+    result.write(json.dumps({'tweets': tweets}, ensure_ascii=False))
+# print(data)
