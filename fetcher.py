@@ -18,6 +18,13 @@ def fetch_nijisanji_tweets(tokens):
         print(e)
         exit(-1)
 
+def search_schedule(tweets):
+    pattern = re.compile(r'\d+:\d+')
+    for tweet in tweets:
+        if pattern.search(tweet['text'].replace('\n', '')):
+            return tweet
+    return None
+
 if __name__ == '__main__':
     tokens = json.load(open('config.json'))['tokens']
     tweets = fetch_tweets(tokens)
