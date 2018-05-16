@@ -1,7 +1,7 @@
 import tweepy
 import json
 import re
-
+import datetime
 
 def fetch_nijisanji_tweets(tokens):
     auth = tweepy.OAuthHandler(tokens['consumer_key'], tokens['consumer_secret'])
@@ -21,9 +21,18 @@ def fetch_nijisanji_tweets(tokens):
         exit(-1)
 
 def search_schedule(tweets):
-    pattern = re.compile(r'\d+:\d+')
+    def has_schedule(text):
+        today = datetime.date.today()
+        today_strs = [
+                f'{today.month}/{today.day}',
+                f'{today.month}月{today.day}日',
+                '本日',
+                ]
+        text = text.replace('\n', ' ')
+        return any([s in text for s in today_strs])
+
     for tweet in tweets:
-        if pattern.search(tweet['text'].replace('\n', '')):
+        if has_schedule(tweet['text']):
             return tweet
     return None
 
