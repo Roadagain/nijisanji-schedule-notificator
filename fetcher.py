@@ -8,7 +8,7 @@ def fetch_nijisanji_tweets(tokens):
     auth.set_access_token(tokens['access_token'], tokens['access_token_secret'])
     params = {
             'screen_name': 'nijisanji_app',
-            'exclude_replies': True,
+            'exclude_replies': False,
             'trim_user': True,
             }
 
