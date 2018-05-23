@@ -10,12 +10,13 @@ def fetch_nijisanji_tweets(tokens):
             'screen_name': 'nijisanji_app',
             'exclude_replies': False,
             'trim_user': True,
+            'tweet_mode': 'extended',
             }
 
     api = tweepy.API(auth)
     try:
         data = api.user_timeline(**params)
-        return map(lambda x: {'text': x.text, 'id': x.id}, data)
+        return map(lambda x: {'text': x.full_text, 'id': x.id}, data)
     except tweepy.error.TweepError as e:
         print(e)
         exit(-1)
