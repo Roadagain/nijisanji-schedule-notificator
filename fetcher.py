@@ -2,6 +2,15 @@ import tweepy
 import json
 import re
 import datetime
+import pytz
+
+def diet_tweet_object(tweet):
+    return {
+            'text': tweet.full_text,
+            'id': tweet.id,
+            'created_at': tweet.created_at,
+            'reply_to': tweet.in_reply_to_status_id
+            }
 
 def fetch_nijisanji_tweets(tokens):
     auth = tweepy.OAuthHandler(tokens['consumer_key'], tokens['consumer_secret'])
@@ -16,20 +25,22 @@ def fetch_nijisanji_tweets(tokens):
     api = tweepy.API(auth)
     try:
         data = api.user_timeline(**params)[::-1]
-        return map(lambda x: {'text': x.full_text, 'id': x.id, 'reply_to': x.in_reply_to_status_id}, data)
+        return map(diet_tweet_object, data)
     except tweepy.error.TweepError as e:
         print(e)
         exit(-1)
 
 def search_schedule(tweets):
-    def has_schedule(text):
+    def has_schedule(tweet):
         today = datetime.date.today()
         today_strs = [
                 f'{today.month}/{today.day}',
                 f'{today.month}月{today.day}日',
-                '本日',
                 ]
-        text = text.replace('\n', ' ')
+        created_at = tweet['created_at'].astimezone(pytz.timezone('Asia/Tokyo')).date()
+        if today == created_at:
+            today_strs.append('本日')
+        text = tweet['text'].replace('\n', ' ')
         return any([s in text for s in today_strs])
 
     indexed_tweets = {}
@@ -37,9 +48,9 @@ def search_schedule(tweets):
     for tweet in tweets:
         indexed_tweets[tweet['id']] = tweet
         reply_to = tweet['reply_to']
-        if has_schedule(tweet['text']):
+        if has_schedule(tweet):
             scheduled.append(tweet)
-        elif reply_to in indexed_tweets and has_schedule(indexed_tweets[reply_to]['text']):
+        elif reply_to in indexed_tweets and has_schedule(indexed_tweets[reply_to]):
             # TODO: 再帰的にリプライを遡る
             scheduled.append(tweet)
     return scheduled
