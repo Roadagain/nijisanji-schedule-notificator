@@ -36,10 +36,10 @@ def search_schedule(tweets):
     scheduled = []
     for tweet in tweets:
         indexed_tweets[tweet['id']] = tweet
+        reply_to = tweet['reply_to']
         if has_schedule(tweet['text']):
             scheduled.append(tweet)
-        reply_to = tweet['reply_to']
-        if reply_to in indexed_tweets and has_schedule(indexed_tweets[reply_to]['text']):
+        elif reply_to in indexed_tweets and has_schedule(indexed_tweets[reply_to]['text']):
             # TODO: 再帰的にリプライを遡る
             scheduled.append(tweet)
     return scheduled
