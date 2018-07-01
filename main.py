@@ -11,17 +11,18 @@ def main():
     payload = config['payload']
     url = config['webhook_url']
 
+    if os.path.exists(OLD_SCHEDULE):
+        old_schedule_id = int(open(OLD_SCHEDULE).readline().strip() or 0)
+    else:
+        old_schedule_id = 0
+
     tweets = fetcher.fetch_nijisanji_tweets(tokens)
-    schedule_tweets = fetcher.search_schedule(tweets)
+    schedule_tweets = [t for t in fetcher.search_schedule(tweets) if t['id'] > old_schedule_id]
     if schedule_tweets == []:
         schedule_id = 0
     else:
         print(schedule_tweets)
         schedule_id = schedule_tweets[-1]['id']
-    if os.path.exists(OLD_SCHEDULE):
-        old_schedule_id = int(open(OLD_SCHEDULE).readline().strip() or 0)
-    else:
-        old_schedule_id = 0
     if schedule_id > old_schedule_id:
         ids = [str(tweet['id']) for tweet in schedule_tweets]
         links = ['https://twitter.com/nijisanji_app/status/' + i for i in ids]
