@@ -33,15 +33,16 @@ def search_schedule(tweets):
         return any([s in text for s in today_strs])
 
     indexed_tweets = {}
+    scheduled = []
     for tweet in tweets:
         indexed_tweets[tweet['id']] = tweet
         if has_schedule(tweet['text']):
-            return tweet
+            scheduled.append(tweet)
         reply_to = tweet['reply_to']
-        if reply_to is not None and has_schedule(indexed_tweets[reply_to]):
+        if reply_to in indexed_tweets and has_schedule(indexed_tweets[reply_to]):
             # TODO: 再帰的にリプライを遡る
-            return tweet
-    return None
+            scheduled.append(tweet)
+    return scheduled
 
 if __name__ == '__main__':
     tokens = json.load(open('config.json'))['tokens']
