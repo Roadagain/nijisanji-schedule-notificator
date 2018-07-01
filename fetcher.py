@@ -15,7 +15,7 @@ def fetch_nijisanji_tweets(tokens):
 
     api = tweepy.API(auth)
     try:
-        data = api.user_timeline(**params)
+        data = api.user_timeline(**params)[::-1]
         return map(lambda x: {'text': x.full_text, 'id': x.id, 'reply_to': x.in_reply_to_status_id}, data)
     except tweepy.error.TweepError as e:
         print(e)
