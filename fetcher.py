@@ -15,7 +15,7 @@ def fetch_nijisanji_tweets(tokens):
 
     api = tweepy.API(auth)
     try:
-        data = api.user_timeline(**params)
+        data = api.user_timeline(**params)[::-1]
         return map(lambda x: {'text': x.full_text, 'id': x.id, 'reply_to': x.in_reply_to_status_id}, data)
     except tweepy.error.TweepError as e:
         print(e)
@@ -33,15 +33,16 @@ def search_schedule(tweets):
         return any([s in text for s in today_strs])
 
     indexed_tweets = {}
+    scheduled = []
     for tweet in tweets:
         indexed_tweets[tweet['id']] = tweet
-        if has_schedule(tweet['text']):
-            return tweet
         reply_to = tweet['reply_to']
-        if reply_to is not None and has_schedule(indexed_tweets[reply_to]):
+        if has_schedule(tweet['text']):
+            scheduled.append(tweet)
+        elif reply_to in indexed_tweets and has_schedule(indexed_tweets[reply_to]['text']):
             # TODO: 再帰的にリプライを遡る
-            return tweet
-    return None
+            scheduled.append(tweet)
+    return scheduled
 
 if __name__ == '__main__':
     tokens = json.load(open('config.json'))['tokens']
