@@ -22,7 +22,6 @@ def main():
     if schedule_tweets == []:
         schedule_id = 0
     else:
-        print(schedule_tweets)
         schedule_id = schedule_tweets[-1]['id']
     if schedule_id > old_schedule_id:
         ids = [str(tweet['id']) for tweet in schedule_tweets]
