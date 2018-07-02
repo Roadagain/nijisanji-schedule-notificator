@@ -3,6 +3,8 @@ import json
 import re
 import datetime
 import pytz
+import itertools
+import functools
 
 def diet_tweet_object(tweet):
     return {
@@ -12,11 +14,11 @@ def diet_tweet_object(tweet):
             'reply_to': tweet.in_reply_to_status_id
             }
 
-def fetch_nijisanji_tweets(tokens):
+def fetch_tweets(screen_name, tokens):
     auth = tweepy.OAuthHandler(tokens['consumer_key'], tokens['consumer_secret'])
     auth.set_access_token(tokens['access_token'], tokens['access_token_secret'])
     params = {
-            'screen_name': 'nijisanji_app',
+            'screen_name': screen_name,
             'exclude_replies': False,
             'trim_user': True,
             'tweet_mode': 'extended',
@@ -29,6 +31,11 @@ def fetch_nijisanji_tweets(tokens):
     except tweepy.error.TweepError as e:
         print(e)
         exit(-1)
+
+def fetch_nijisanji_tweets(tokens):
+    accounts = ['nijisanji_app', 'NijisanjiGamers', 'Nijisanji_Seeds']
+    tweets = [fetch_tweets(i, tokens) for i in accounts]
+    return functools.reduce(itertools.chain, tweets)
 
 def search_schedule(tweets):
     def has_schedule(tweet):
