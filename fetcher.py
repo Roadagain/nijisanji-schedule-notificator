@@ -1,10 +1,9 @@
 import tweepy
 import json
-import re
-import datetime
-import pytz
-import itertools
-import functools
+from datetime import date
+from pytz import timezone
+from itertools import chain
+from functools import reduce
 
 def diet_tweet_object(tweet):
     return {
@@ -35,16 +34,16 @@ def fetch_tweets(screen_name, tokens):
 def fetch_nijisanji_tweets(tokens):
     accounts = ['nijisanji_app', 'NijisanjiGamers', 'Nijisanji_Seeds']
     tweets = [fetch_tweets(i, tokens) for i in accounts]
-    return functools.reduce(itertools.chain, tweets)
+    return reduce(chain, tweets)
 
 def search_schedule(tweets):
     def has_schedule(tweet):
-        today = datetime.date.today()
+        today = date.today()
         today_strs = [
                 f'{today.month}/{today.day}',
                 f'{today.month}月{today.day}日',
                 ]
-        created_at = tweet['created_at'].astimezone(pytz.timezone('Asia/Tokyo')).date()
+        created_at = tweet['created_at'].astimezone(timezone('Asia/Tokyo')).date()
         if today == created_at:
             today_strs.append('本日')
         text = tweet['text'].replace('\n', ' ')
