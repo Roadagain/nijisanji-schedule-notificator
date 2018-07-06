@@ -10,6 +10,7 @@ def fetch_tweets(screen_name, tokens):
     params = {
             'screen_name': screen_name,
             'exclude_replies': False,
+            'include_rts': False,
             'trim_user': True,
             'tweet_mode': 'extended',
             }
