@@ -102,3 +102,4 @@ ENV/
 
 # old schedule
 old_schedule.txt
+result.json
