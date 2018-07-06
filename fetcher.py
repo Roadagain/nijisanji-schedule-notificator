@@ -3,6 +3,7 @@ import json
 from itertools import chain
 from functools import reduce
 import tweetfilter
+from datetime import datetime
 
 def fetch_tweets(screen_name, tokens):
     auth = tweepy.OAuthHandler(tokens['consumer_key'], tokens['consumer_secret'])
@@ -29,9 +30,15 @@ def fetch_nijisanji_tweets(tokens):
     return reduce(chain, tweets)
 
 if __name__ == '__main__':
+    def support_datetime_default(o):
+        if isinstance(o, datetime):
+            return o.isoformat()
+        raise TypeError(repr(o) + " is not JSON serializable")
+
     tokens = json.load(open('config.json'))['tokens']
     tweets = list(fetch_nijisanji_tweets(tokens))
     schedule = tweetfilter.search_schedule(tweets)
     print(schedule)
+    dumped_tweets = json.dumps({'tweets': tweets}, ensure_ascii=False, default=support_datetime_default)
     with open('result.json', 'w') as result:
-        result.write(json.dumps({'tweets': tweets}, ensure_ascii=False))
+        result.write(dumped_tweets)
